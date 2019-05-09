@@ -1,15 +1,31 @@
-from flask import Flask, jsonify
+"""Example Flask app with Flasgger"""
+
+from flask import Flask, Response
 from flasgger import Swagger
+import logging
+import json
 
 app = Flask(__name__)
 swagger = Swagger(app)
 
-def lambda_handler(event, context):
-   pass
+logger = logging.getLogger()
 
-@app.route('/colors/<palette>/')
+
+def api_response(resp_dict, status_code):
+    response = Response(json.dumps(resp_dict), status_code)
+    response.headers["Content-Type"] = "application/json"
+    print(response)
+    return response
+
+
+def lambda_handler(event, context):
+    logger.debug("Api started")
+
+
+
+@app.route('/colors/<palette>/', methods=["GET"])
 def colors(palette):
-    """Example endpoint returning a list of colors by palette
+    """Example endpoint returning a list of colors_api by palette
     This is using docstrings for specifications.
     ---
     parameters:
@@ -31,12 +47,13 @@ def colors(palette):
         type: string
     responses:
       200:
-        description: A list of colors (may be filtered by palette)
+        description: A list of colors_api (may be filtered by palette)
         schema:
           $ref: '#/definitions/Palette'
         examples:
           rgb: ['red', 'green', 'blue']
     """
+    logger.debug({"palette": palette})
     all_colors = {
         'cmyk': ['cian', 'magenta', 'yellow', 'black'],
         'rgb': ['red', 'green', 'blue']
@@ -46,7 +63,9 @@ def colors(palette):
     else:
         result = {palette: all_colors.get(palette)}
 
-    return jsonify(result)
+    logger.debug({"result": result})
+    return api_response(result, 200)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
