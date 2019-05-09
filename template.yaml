@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Simple Flask API using lambda proxy integration
+
+Globals:
+  Function:
+    Timeout: 10
+
+Resources:
+  FlaskApiLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: colors_api/
+      Handler: colors.lambda_handler
+      Runtime: python3.7
+      Events:
+        Any:
+          Type: Api
+          Properties:
+            Path: /
+            Method: any
