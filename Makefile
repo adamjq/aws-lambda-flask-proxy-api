@@ -1,7 +1,7 @@
 default: build package deploy
 
 build:
-	sam build
+	sam build --use-container
 
 clean:
 	rm -f ./handler.zip

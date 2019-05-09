@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- python3.6+
+- python3.7+
 - pip3
 - AWS CLI
 - SAM CLI

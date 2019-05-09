@@ -22,7 +22,6 @@ def lambda_handler(event, context):
     logger.debug("Api started")
 
 
-
 @app.route('/colors/<palette>/', methods=["GET"])
 def colors(palette):
     """Example endpoint returning a list of colors_api by palette
@@ -34,7 +33,7 @@ def colors(palette):
         type: string
         enum: ['all', 'rgb', 'cmyk']
         required: true
-        default: all
+        default: allecho $
     definitions:
       Palette:
         type: object
