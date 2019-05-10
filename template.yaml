@@ -11,12 +11,12 @@ Resources:
   FlaskApiLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: colors_api/
-      Handler: colors.lambda_handler
+      CodeUri: users/
+      Handler: users.lambda_handler
       Runtime: python3.7
       Events:
-        ProxyLambda:
+        AnyRequest:
           Type: Api
           Properties:
-            Path: /
-            Method: any
+            Path: /{proxy+}
+            Method: ANY

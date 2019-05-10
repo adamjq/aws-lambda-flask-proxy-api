@@ -1,10 +1,14 @@
-default: build package deploy
+default: validate build
+
+validate:
+	sam validate
 
 build:
 	sam build --use-container
 
 clean:
-	rm -f ./handler.zip
+	rm -rf .aws-sam
+	rm -rf venv
 	rm -f ./packaged.yaml
 
 package:
@@ -22,4 +26,6 @@ deploy:
 
 run-local:
 	virtualenv venv && source venv/bin/activate
-	cd colors_api && pip3 install -r requirements.txt && python3 colors.py
+	cd users && pip3 install -r requirements.txt && python3 users.py
+
+deploy-stack: validate build package deploy
