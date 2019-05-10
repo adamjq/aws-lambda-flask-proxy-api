@@ -1,6 +1,6 @@
 """Example Flask app with Flasgger"""
 
-from flask import Flask, Response, jsonify
+from flask import Flask, request, Response, jsonify
 from flasgger import Swagger, validate
 import logging
 import json
@@ -15,7 +15,6 @@ swagger = Swagger(app)
 def api_response(resp_dict, status_code):
     response = Response(json.dumps(resp_dict), status_code)
     response.headers["Content-Type"] = "application/json"
-    print(response)
     return response
 
 
@@ -87,11 +86,12 @@ def create_user():
         schema:
           $ref: '#/definitions/User'
         examples:
-          '1': {"firstName": "Adam", "lastName": "test", "age": 100}
+          '1': {"firstName": "first", "lastName": "last", "age": 100}
     """
+    data = json.loads(request.data)
     print("Creating a user")
-    user = {"firstName": "Adam1", "lastName": "test1", "age": 100}
-    return api_response(user, 201)
+    print(data)
+    return api_response(data, 201)
 
 
 if __name__ == "__main__":
