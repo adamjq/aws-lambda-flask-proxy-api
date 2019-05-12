@@ -2,3 +2,4 @@
 venv/
 .aws-sam
 packaged.yaml
+*__pycache__

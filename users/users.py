@@ -1,15 +1,52 @@
 """Example Flask app with Flasgger"""
 
 from flask import Flask, request, Response, jsonify
-from flasgger import Swagger, validate
+from flasgger import Swagger, swag_from
 import logging
 import json
+import os
+import jsonschema
+from werkzeug.exceptions import abort
 
 logger = logging.getLogger()
 logger.setLevel('DEBUG')
 
 app = Flask(__name__)
-swagger = Swagger(app)
+
+
+def get_schema():
+    schema_dir = os.path.dirname(os.path.realpath(__file__)) + "/../schema"
+    with open(f"{schema_dir}/users-spec.json", 'r') as schema_file:
+        return json.load(schema_file)
+
+
+def validation_error_inform_error(err, data, schema):
+    """
+    Custom validation error handler which produces 400 Bad Request
+    response in case validation fails and returns the error
+    """
+    logging.error("API validation error: %s", json.dumps({"error": str(err), "data": data, "schema": schema}))
+    abort(Response(json.dumps({"error": str(err), "schema": schema}), status=400))
+
+
+def custom_openapi_validate(data, component, schema):
+    """
+    Custom validation function for Flask requests.
+    Validates a request body against an component in a openapi3.0 template as Flasgger only validates swagger2.0
+    """
+    components = schema.get("components")
+    if components is not None:
+        schemas = components.get("schemas")
+        if schemas is not None and component in schemas:
+            try:
+                jsonschema.validate(instance=data, schema=schemas[component])
+            except jsonschema.exceptions.ValidationError as err:
+                validation_error_inform_error(err, data, schema)
+
+swagger = Swagger(
+    app,
+    template=get_schema()
+)
 
 
 def api_response(resp_dict, status_code):
@@ -88,9 +125,11 @@ def create_user():
         examples:
           '1': {"firstName": "first", "lastName": "last", "age": 100}
     """
-    data = json.loads(request.data)
-    print("Creating a user")
-    print(data)
+
+    swagger_doc = swagger.template
+    custom_openapi_validate(data=request.json, component='User', schema=swagger_doc)
+
+    data = request.json
     return api_response(data, 201)
 
 

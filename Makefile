@@ -6,6 +6,9 @@ validate:
 build:
 	sam build --use-container
 
+test:
+	python -m unittest discover
+
 clean:
 	rm -rf .aws-sam
 	rm -rf venv
