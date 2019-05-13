@@ -16,6 +16,12 @@ The API uses Lambda Proxy integration with API to host a Flask app on a lambda f
 
 ## Local Development
 
+#### Unit tests
+```
+make test
+```
+
+#### Manual testing
 ```
 make run-local
 ```
@@ -26,6 +32,8 @@ Example call:
 Enter `http://127.0.0.1:5000/users/1/` in the browser.
 
 ## Packaging and deployment
+
+*Note*: the deployment currently isn't setup up to run Flask on lambda
 
 An S3 bucket must be created before deployment to hold the lambda code:
 
