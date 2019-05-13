@@ -1,12 +1,10 @@
 """Example Flask app with Flasgger"""
 
-from flask import Flask, request, Response, jsonify
-from flasgger import Swagger, swag_from
+from flask import Flask, request
+from flasgger import Swagger
 import logging
-import json
-import os
-import jsonschema
-from werkzeug.exceptions import abort
+from api_utils import get_schema, api_response, openapi_validate, resolve_schema_refs
+
 
 logger = logging.getLogger()
 logger.setLevel('DEBUG')
@@ -14,45 +12,13 @@ logger.setLevel('DEBUG')
 app = Flask(__name__)
 
 
-def get_schema():
-    schema_dir = os.path.dirname(os.path.realpath(__file__)) + "/../schema"
-    with open(f"{schema_dir}/users-spec.json", 'r') as schema_file:
-        return json.load(schema_file)
-
-
-def validation_error_inform_error(err, data, schema):
-    """
-    Custom validation error handler which produces 400 Bad Request
-    response in case validation fails and returns the error
-    """
-    logging.error("API validation error: %s", json.dumps({"error": str(err), "data": data, "schema": schema}))
-    abort(Response(json.dumps({"error": str(err), "schema": schema}), status=400))
-
-
-def custom_openapi_validate(data, component, schema):
-    """
-    Custom validation function for Flask requests.
-    Validates a request body against an component in a openapi3.0 template as Flasgger only validates swagger2.0
-    """
-    components = schema.get("components")
-    if components is not None:
-        schemas = components.get("schemas")
-        if schemas is not None and component in schemas:
-            try:
-                jsonschema.validate(instance=data, schema=schemas[component])
-            except jsonschema.exceptions.ValidationError as err:
-                validation_error_inform_error(err, data, schema)
+schema = get_schema()
+resolved_schema = resolve_schema_refs(schema)
 
 swagger = Swagger(
     app,
-    template=get_schema()
+    template=schema
 )
-
-
-def api_response(resp_dict, status_code):
-    response = Response(json.dumps(resp_dict), status_code)
-    response.headers["Content-Type"] = "application/json"
-    return response
 
 
 @app.route('/users/<user_id>/', methods=["GET"])
@@ -86,10 +52,12 @@ def get_user(user_id):
          description: No user exists
     """
     all_users = {
-        '1': {"firstName": "Adam1", "lastName": "test1", "age": 100},
+        '1': {"firstName": "Adam1", "lastName": "test1", "age": 5},
         '2': {"firstName": "Adam2", "lastName": "test2", "age": 1000}
     }
     if user_id in all_users:
+        data = all_users[user_id]
+        openapi_validate(data, 'User', resolved_schema)
         return api_response(all_users[user_id], 200)
     else:
         return api_response(None, 404)
@@ -125,13 +93,46 @@ def create_user():
         examples:
           '1': {"firstName": "first", "lastName": "last", "age": 100}
     """
-
-    swagger_doc = swagger.template
-    custom_openapi_validate(data=request.json, component='User', schema=swagger_doc)
+    print(request.json)
+    openapi_validate(request.json, 'User', resolved_schema)
 
     data = request.json
     return api_response(data, 201)
 
 
+@app.route('/users/', methods=["GET"])
+def get_users():
+    """Returns a list of all users
+    ---
+    definitions:
+      User:
+        type: object
+        properties:
+          firstName:
+            type: string
+          lastName:
+            type: string
+          age:
+            type: number
+    responses:
+      200:
+        description: A list of all users
+        schema:
+          $ref: '#/definitions/UsersList'
+        examples:
+          [{"firstName": "first", "lastName": "last", "age": 100}]
+    """
+
+    all_users = [
+        {"firstName": "Adam1", "lastName": "test1", "age": 100},
+        {"firstName": "Adam2", "lastName": "test2", "age": 1000}
+    ]
+
+    data = all_users
+    openapi_validate(all_users, 'UsersList', resolved_schema)
+
+    return api_response(data, 200)
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5001)

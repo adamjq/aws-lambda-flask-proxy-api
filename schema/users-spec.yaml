@@ -1,0 +1,71 @@
+components:
+  schemas:
+    User:
+      properties:
+        age:
+          type: number
+        firstName:
+          type: string
+        lastName:
+          type: string
+      type: object
+    UsersList:
+      items:
+        $ref: '#/components/schemas/User'
+      type: array
+info:
+  description: powered by Flasgger
+  termsOfService: /tos
+  title: A swagger API
+  version: 0.0.1
+openapi: 3.0.0
+paths:
+  /users/:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+              type: string
+        description: the user to create
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    age: 100
+                    firstName: first
+                    lastName: last
+              schema:
+                $ref: '#/components/schemas/User'
+          description: User was successfully created
+      summary: Creates a user
+  /users/{user_id}/:
+    get:
+      parameters:
+      - description: the id of the user
+        in: path
+        name: user_id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    age: 100
+                    firstName: Adam
+                    lastName: test
+              schema:
+                $ref: '#/components/schemas/User'
+          description: A user
+        '404':
+          description: No user exists
+      summary: Returns a user if one exists

@@ -2,3 +2,5 @@ flask
 flasgger
 jsonschema
 werkzeug
+openapi-core
+prance

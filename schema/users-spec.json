@@ -88,6 +88,12 @@
   },
   "components": {
     "schemas": {
+      "UsersList": {
+          "type": "array",
+          "items": {
+              "$ref": "#/components/schemas/User"
+          }
+      },
       "User": {
         "properties": {
           "age": {

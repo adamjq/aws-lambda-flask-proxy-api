@@ -1,6 +1,5 @@
 import unittest
-from users.users import custom_openapi_validate
-import jsonschema
+from users.api_utils import openapi_validate, resolve_schema_refs
 from werkzeug.exceptions import HTTPException
 
 
@@ -9,7 +8,12 @@ class SchemaValidation(unittest.TestCase):
     def setUp(self):
         self.valid_single_schema = {
             "openapi": "3.0.0",
-            "info": {},
+            "info": {
+                "description": "powered by Flasgger",
+                "termsOfService": "/tos",
+                "title": "A swagger API",
+                "version": "0.0.1"
+            },
             "paths": {},
             "components": {
                 "schemas": {
@@ -33,7 +37,12 @@ class SchemaValidation(unittest.TestCase):
 
         self.valid_nested_schema = {
             "openapi": "3.0.0",
-            "info": {},
+            "info": {
+                "description": "powered by Flasgger",
+                "termsOfService": "/tos",
+                "title": "A swagger API",
+                "version": "0.0.1"
+            },
             "paths": {},
             "components": {
                 "schemas": {
@@ -67,15 +76,17 @@ class SchemaValidation(unittest.TestCase):
             "firstName": "test",
             "lastName": "test"
         }
-        custom_openapi_validate(data=data, component='User', schema=self.valid_single_schema)
+        schema = resolve_schema_refs(self.valid_single_schema)
+        openapi_validate(data=data, component='User', schema=schema)
 
     def testOpenApiSingleSchemaInvalidData(self):
         data = {
             "firstName": 100,
             "lastName": "test"
         }
+        schema = resolve_schema_refs(self.valid_single_schema)
         with self.assertRaises(HTTPException):
-            custom_openapi_validate(data=data, component='User', schema=self.valid_single_schema)
+            openapi_validate(data=data, component='User', schema=schema)
 
     def testOpenApiNestedSchemaValidData(self):
         data = [{
@@ -83,6 +94,7 @@ class SchemaValidation(unittest.TestCase):
             "firstName": "test",
             "lastName": "test"
         }]
-        custom_openapi_validate(data=data, component='UsersList', schema=self.valid_nested_schema)
+        schema = resolve_schema_refs(self.valid_nested_schema)
+        openapi_validate(data=data, component='UsersList', schema=schema)
 
 

@@ -7,7 +7,8 @@ build:
 	sam build --use-container
 
 test:
-	python -m unittest discover
+	virtualenv venv && source venv/bin/activate
+	pip3 install -r users/requirements.txt && python3 -m unittest discover
 
 clean:
 	rm -rf .aws-sam
