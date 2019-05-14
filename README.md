@@ -21,12 +21,12 @@ request bodies against schema components is achieved in the `api_utils` module.
 
 #### Unit tests
 ```
-make test
+make run-tests
 ```
 
 #### Manual testing
 ```
-make run-local
+make
 ```
 
 Navigate to `http://localhost:5000/apidocs/` in the browser for Docs.

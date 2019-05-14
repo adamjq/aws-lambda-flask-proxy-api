@@ -9,6 +9,9 @@ install: activate
 test:
 	python3 -m unittest discover
 
+run-tests: install
+	python3 -m unittest discover
+
 clean:
 	rm -rf venv
 
