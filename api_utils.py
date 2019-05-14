@@ -8,13 +8,14 @@ from prance import ResolvingParser
 
 
 def get_schema():
-    schema_dir = os.path.dirname(os.path.realpath(__file__)) + "/../schema"
-    with open(f"{schema_dir}/users-spec.json", 'r') as schema_file:
+    schema_dir = os.path.dirname(os.path.realpath(__file__)) + "/schema"
+    with open(f"{schema_dir}/users-schema.json", 'r') as schema_file:
         return json.load(schema_file)
 
 
 def resolve_schema_refs(schema) -> dict:
-    parser = ResolvingParser(spec_string=schema)
+    parser = ResolvingParser(spec_string=schema,
+                             backend="openapi-spec-validator")
     return parser.specification
 
 

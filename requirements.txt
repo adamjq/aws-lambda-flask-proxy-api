@@ -1,0 +1,8 @@
+flask
+flasgger
+flask
+jsonschema<3.0.0
+werkzeug
+openapi-spec-validator
+prance
+zappa

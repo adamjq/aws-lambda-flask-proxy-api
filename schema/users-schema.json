@@ -1,13 +1,37 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "powered by Flasgger",
+    "description": "User Management Flask API",
     "termsOfService": "/tos",
-    "title": "A swagger API",
+    "title": "A Flask REST API for User data",
     "version": "0.0.1"
   },
   "paths": {
     "/users/": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Successfully returned all users",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "response": {
+                    "value": [{
+                      "age": 100,
+                      "firstName": "first",
+                      "lastName": "last"
+                    }]
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/UsersList"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Returns a list of all users"
+      },
       "post": {
         "requestBody": {
           "content": {

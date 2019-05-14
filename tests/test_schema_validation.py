@@ -1,8 +1,7 @@
 import unittest
 from copy import deepcopy
-from users.api_utils import openapi_validate, resolve_schema_refs
+from api_utils import openapi_validate, resolve_schema_refs
 from werkzeug.exceptions import HTTPException
-
 
 class SchemaValidation(unittest.TestCase):
 

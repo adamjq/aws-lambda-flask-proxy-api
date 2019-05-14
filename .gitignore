@@ -1,6 +1,4 @@
 .idea/
 venv/
-.aws-sam
-packaged.yaml
 *__pycache__
 *.pyc

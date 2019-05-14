@@ -1,18 +1,21 @@
-# Flask / Flasgger
+# Flask API with AWS API Gateway (Lambda proxy)
 
 ## Requirements
 
-- python3.7+
+- python3.7
 - pip3
 - AWS CLI
-- SAM CLI
+- AWS profile configured with Admin access
 - virtualenv
 - [Flask](http://flask.pocoo.org/)
+- [Zappa](https://github.com/Miserlou/Zappa)
 
 ## Overview
 
-The API uses Lambda Proxy integration with API to host a Flask app on a lambda function. It uses 
-[AWSGI](https://github.com/slank/awsgi) for the proxy integration within the lambda.
+The API uses Zappa to host a Flask app in a lambda function using AWS API Gateway proxy integration.
+
+It uses Flasgger to host an `openapi 3.0` schema document from the Lambda function. Custom schema validation of API 
+request bodies against schema components is achieved in the `api_utils` module.
 
 ## Local Development
 
@@ -28,29 +31,23 @@ make run-local
 
 Navigate to `http://localhost:5000/apidocs/` in the browser for Docs.
 
-Example call:
+Example call:  
 Enter `http://127.0.0.1:5000/users/1/` in the browser.
 
 ## Packaging and deployment
 
-*Note*: the deployment currently isn't setup up to run Flask on lambda
+The repo uses [Zappa](https://github.com/Miserlou/Zappa) to package and deploy the API. 
 
-An S3 bucket must be created before deployment to hold the lambda code:
-
-```
-aws s3 mb s3://BUCKET_NAME
-```
-
-Set the follow environment variables:
-```
-export S3_BUCKET=
-export STACK_NAME=
-```
-
-To build, package and deploy the stack:
+Run the following command to initialize the deployment:
 
 ```
-make deploy-stack
+zappa init
+
+# Create stack
+make deploy
+
+# Update stack
+make update
 ```
 
 ## Clean up deployment resources
