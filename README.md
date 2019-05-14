@@ -41,13 +41,17 @@ The repo uses [Zappa](https://github.com/Miserlou/Zappa) to package and deploy t
 Run the following command to initialize the deployment:
 
 ```
+# Activate virtualenv and install project dependencies
+make install
+
+# Create the zappa_settings.json file needed for deployment
 zappa init
 
-# Create stack
-make deploy
+# Deploy stack to AWS with zappa
+zappa deploy
 
 # Update stack
-make update
+zappa update
 ```
 
 ## Clean up deployment resources

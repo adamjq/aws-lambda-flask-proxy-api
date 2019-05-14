@@ -1,22 +1,22 @@
-default: test run-local
+default: install test run-local
+
+activate:
+	virtualenv venv && source venv/bin/activate
+
+install: activate
+	pip3 install -r requirements.txt
 
 test:
-	virtualenv venv && source venv/bin/activate
-	pip3 install -r requirements.txt && python3 -m unittest discover
+	python3 -m unittest discover
 
 clean:
 	rm -rf venv
 
-update:
-	virtualenv venv && source venv/bin/activate
-	pip3 install -r requirements.txt
+update: install
 	zappa update
 
-deploy:
-	virtualenv venv && source venv/bin/activate
-	pip3 install -r requirements.txt
+deploy: install
 	zappa deploy
 
 run-local:
-	virtualenv venv && source venv/bin/activate
-	pip3 install -r requirements.txt && python3 api.py
+	python3 api.py
