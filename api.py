@@ -51,5 +51,11 @@ def create_user():
     return api_response(request_data, 201)
 
 
+@app.route('/users/resend-invite/<user_id>/', methods=["PUT"])
+def resend_invite_to_user(user_id):
+    request_data = request.json
+    return api_response(request_data, 200)
+
+
 if __name__ == "__main__":
     app.run(debug=True)

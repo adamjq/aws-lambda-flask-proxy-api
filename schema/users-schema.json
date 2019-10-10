@@ -108,6 +108,60 @@
         },
         "summary": "Returns a user if one exists"
       }
+    },
+    "/users/resend-invite/{user_id}/": {
+      "put": {
+        "parameters": [
+          {
+            "description": "the id of the user",
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "User was successfully re-invited",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "response": {}
+                },
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User already activated",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "response": {}
+                },
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Resends email invite to user"
+      }
     }
   },
   "components": {
